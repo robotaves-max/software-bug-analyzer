@@ -1,0 +1,37 @@
+# Python environment & cache
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+ENV/
+env/
+
+# Environment variables
+.env
+
+# Data & Models (ignore large artifacts, preserve directory structures via .gitkeep)
+data/raw/*.json
+data/raw/*.csv
+data/processed/*.json
+data/processed/*.csv
+faiss_index/*.faiss
+faiss_index/*.json
+faiss_index/*.pkl
+models/*
+!models/.gitkeep
+!faiss_index/.gitkeep
+!data/raw/.gitkeep
+!data/processed/.gitkeep
+
+# Database
+*.db
+*.sqlite3
+
+# Logs & OS metadata
+logs/
+*.log
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/

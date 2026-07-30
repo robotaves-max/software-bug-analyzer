@@ -1,0 +1,91 @@
+project:
+  name: "Software Bug Analyzer"
+  version: "1.0.0"
+
+dataset:
+  repos:
+    - "facebook/react"
+    - "python/cpython"
+    - "tensorflow/tensorflow"
+    - "microsoft/vscode"
+    - "django/django"
+    - "pallets/flask"
+    - "nodejs/node"
+    - "vercel/next.js"
+  max_issues_per_repo: 500
+  states:
+    - "closed"
+  labels_filter: []
+  min_comments: 1
+  output_raw: "data/raw/github_issues_raw.json"
+  output_processed: "data/processed/github_issues_clean.json"
+
+cleaning:
+  remove_bot_comments: true
+  bot_keywords:
+    - "dependabot"
+    - "stale"
+    - "github-actions"
+    - "codecov"
+    - "snyk-bot"
+    - "probot"
+  min_description_length: 20
+  max_description_length: 5000
+  deduplicate: true
+
+nlp:
+  spacy_model: "en_core_web_sm"
+  entity_custom_patterns:
+    file_path_regex: "([\\w\\/\\.-]+\\.(py|js|ts|java|cpp|go|rb|tsx|jsx))"
+    error_code_regex: "\\b([A-Z]+_\\d+|ERR_[A-Z0-9_]+|E\\d{4})\\b"
+    version_regex: "\\bv?\\d+\\.\\d+(\\.\\d+)?\\b"
+  keyphrase:
+    method: "hybrid"
+    top_n: 10
+
+embeddings:
+  model_name: "all-MiniLM-L6-v2"
+  embedding_dim: 384
+  batch_size: 32
+  normalize: true
+  device: "cpu"
+
+faiss:
+  index_type: "Flat"
+  metric: "cosine"
+  index_path: "faiss_index/bug_index.faiss"
+  metadata_path: "faiss_index/bug_metadata.json"
+  top_k: 5
+
+llm:
+  provider: "groq"
+  model: "llama-3.1-70b-versatile"
+  temperature: 0.2
+  max_tokens: 1500
+  system_prompt_key: "bug_analysis"
+  retry: 3
+
+modules_list:
+  - "Authentication & AuthZ"
+  - "Image Upload Service"
+  - "Payment Gateway"
+  - "Search Engine"
+  - "User Management"
+  - "API Gateway"
+  - "Database Connector"
+  - "Frontend UI Rendering"
+  - "Notification Service"
+  - "Caching & Redis"
+  - "File Processing"
+  - "Background Worker"
+
+teams_list:
+  - "Backend Services"
+  - "Frontend Team"
+  - "DevOps & Infrastructure"
+  - "Security Team"
+  - "Database Admins"
+  - "QA & Test Engineering"
+  - "Mobile Team"
+  - "Core Architecture"
+  - "Data Engineering"
