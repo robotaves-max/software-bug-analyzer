@@ -85,7 +85,11 @@ class BugAnalysisPipeline:
                 except Exception as e:
                     logger.warning(f"Could not load existing FAISS index ({e}). Index remains empty until build.")
             else:
-                logger.warning(f"FAISS index file not found at {index_path}. Build index via pipeline.build_faiss_index().")
+                logger.info("No FAISS index found. Building a sample vector store from available dataset.")
+                try:
+                    self.build_faiss_index()
+                except Exception as e:
+                    logger.warning(f"Unable to build FAISS index during initialization: {e}")
 
         self.retriever = BugRetriever(
             embedder=self.embedder,
@@ -221,7 +225,7 @@ class BugAnalysisPipeline:
 
     def build_faiss_index(self, cleaned_path: Optional[str] = None) -> Dict[str, Any]:
         """Computes embeddings for cleaned issues and builds FAISS vector index."""
-        if not self.initialized:
+        if self.embedder is None or self.faiss_store is None:
             self.initialize(load_faiss=False)
 
         ds_cfg = self.config.get("dataset", {})

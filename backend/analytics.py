@@ -1,7 +1,15 @@
+import io
 import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
 from typing import List, Dict, Any
+
+try:
+    from reportlab.lib.pagesizes import letter
+    from reportlab.pdfgen import canvas
+    REPORTLAB_AVAILABLE = True
+except ImportError:
+    REPORTLAB_AVAILABLE = False
 
 def prepare_analytics_dataframe(records: List[Dict[str, Any]]) -> pd.DataFrame:
     """Converts database records list into a pandas DataFrame."""

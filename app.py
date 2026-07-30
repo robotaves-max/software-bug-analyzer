@@ -82,6 +82,23 @@ st.sidebar.markdown("""
 - 📜 **4_History**: Bug History & Logs
 """)
 
+dark_mode = st.sidebar.checkbox("Enable Dark Mode", value=True)
+if dark_mode:
+    st.markdown(
+        """
+        <style>
+            .stApp {
+                background-color: #0f172a;
+                color: #f8fafc;
+            }
+            .css-ffhzg2 {
+                background-color: #020617;
+            }
+        </style>
+        """,
+        unsafe_allow_html=True
+    )
+
 st.sidebar.markdown("---")
 st.sidebar.info("💡 Person 1 AI Pipeline runs in the background powered by spaCy, SentenceTransformers, FAISS, and Groq/OpenAI LLM models.")
 

@@ -131,6 +131,8 @@ OPENAI_API_KEY=sk-...
 GOOGLE_API_KEY=AIzaSy...
 ```
 
+> If no LLM API credentials are provided, the pipeline automatically falls back to a deterministic rule-based prediction engine so the project is still usable for demo and offline evaluation.
+
 ---
 
 ## 🧪 Verification & Running Demos
