@@ -70,13 +70,15 @@ class EntityExtractor:
         doc = self.nlp(text)
         entities: Dict[str, List[str]] = {}
 
-        if doc.has_annotation("ENT"):
-            for ent in doc.ents:
-                label = ent.label_
-                if label not in entities:
-                    entities[label] = []
-                if ent.text.strip() not in entities[label]:
-                    entities[label].append(ent.text.strip())
+        # ``ENT`` is not a valid annotation name in newer spaCy releases
+        # (for example 3.8).  ``doc.ents`` is safe for both a trained pipeline
+        # and the blank-English fallback, so iterate over it directly.
+        for ent in doc.ents:
+            label = ent.label_
+            if label not in entities:
+                entities[label] = []
+            if ent.text.strip() not in entities[label]:
+                entities[label].append(ent.text.strip())
 
         return entities
 

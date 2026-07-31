@@ -124,3 +124,68 @@ def build_team_donut_chart(df: pd.DataFrame):
     )
     fig.update_layout(template="plotly_dark", height=380)
     return fig
+
+
+def generate_pdf_report(df: pd.DataFrame) -> bytes:
+    """Create a concise, downloadable PDF summary of the bug analysis data.
+
+    The dashboard only calls this function when records exist.  Keeping the
+    report tabular and limiting long text fields makes it readable and avoids
+    overflowing the page for real-world bug descriptions.
+    """
+    if not REPORTLAB_AVAILABLE:
+        raise RuntimeError("reportlab is required to generate PDF reports.")
+
+    buffer = io.BytesIO()
+    pdf = canvas.Canvas(buffer, pagesize=letter)
+    page_width, page_height = letter
+    left_margin, top_margin, bottom_margin = 42, page_height - 46, 46
+    y = top_margin
+
+    pdf.setTitle("Software Bug Analyzer Report")
+    pdf.setFont("Helvetica-Bold", 16)
+    pdf.drawString(left_margin, y, "Software Bug Analyzer Report")
+    y -= 22
+    pdf.setFont("Helvetica", 9)
+    pdf.drawString(left_margin, y, f"Total analyses: {len(df)}")
+    y -= 24
+
+    headers = [("ID", 36), ("Date", 70), ("Severity", 60), ("Category", 88), ("Module", 125), ("Team", 120)]
+
+    def draw_header(position: float) -> float:
+        pdf.setFont("Helvetica-Bold", 8)
+        x = left_margin
+        for label, width in headers:
+            pdf.drawString(x, position, label)
+            x += width
+        pdf.line(left_margin, position - 3, page_width - left_margin, position - 3)
+        return position - 15
+
+    y = draw_header(y)
+    pdf.setFont("Helvetica", 8)
+    for _, row in df.iterrows():
+        if y < bottom_margin:
+            pdf.showPage()
+            y = top_margin
+            y = draw_header(y)
+            pdf.setFont("Helvetica", 8)
+
+        values = [
+            str(row.get("id", "")),
+            str(row.get("date", ""))[:10],
+            str(row.get("severity", "")),
+            str(row.get("category", "")),
+            str(row.get("module", "")),
+            str(row.get("team", "")),
+        ]
+        x = left_margin
+        for value, (_, width) in zip(values, headers):
+            # Canvas does not wrap text, so keep each table cell within bounds.
+            max_chars = max(5, int(width / 4.5))
+            rendered = value if len(value) <= max_chars else f"{value[:max_chars - 3]}..."
+            pdf.drawString(x, y, rendered)
+            x += width
+        y -= 13
+
+    pdf.save()
+    return buffer.getvalue()

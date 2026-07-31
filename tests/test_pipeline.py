@@ -56,6 +56,11 @@ class TestBugAnalyzerPipeline(unittest.TestCase):
         self.assertIn("v1.2.3", res["versions"])
         self.assertIn("windows", res["os_browsers"])
 
+    def test_04b_entity_extractor_supports_blank_spacy_pipeline(self):
+        extractor = EntityExtractor()
+        extractor.nlp = __import__("spacy").blank("en")
+        self.assertEqual(extractor.extract_with_spacy("A plain bug report."), {})
+
     def test_05_keyphrase_extractor(self):
         kp_extractor = KeyphraseExtractor()
         text = "Application freezes after clicking login button due to session token validation deadlock."
@@ -99,6 +104,21 @@ class TestBugAnalyzerPipeline(unittest.TestCase):
 
         self.assertIsInstance(pred["possible_causes"], list)
         self.assertIsInstance(pred["recommended_tests"], list)
+
+    def test_08_fallback_routes_specific_incident_types(self):
+        payment = self.pipeline.analyze(
+            "Payment double charge on slow network",
+            "The checkout request has no idempotency key and the customer is charged twice."
+        )["prediction"]
+        self.assertEqual(payment["category"], "Logic Error")
+        self.assertEqual(payment["affected_module"], "Payment Gateway")
+
+        database = self.pipeline.analyze(
+            "API requests time out during database queries",
+            "HTTP 504 occurs because db_pool.py does not release connection locks."
+        )["prediction"]
+        self.assertEqual(database["category"], "Network")
+        self.assertEqual(database["affected_module"], "Database Connector")
 
 if __name__ == "__main__":
     unittest.main()

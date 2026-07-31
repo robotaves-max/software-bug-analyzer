@@ -99,14 +99,21 @@ class BugPredictor:
         logger.info("Executing Rule-Based NLP Heuristic Engine for bug analysis...")
         text_lower = f"{title} {description}".lower()
 
-        if any(k in text_lower for k in ["crash", "hang", "freeze", "terminate", "oom", "out of memory", "fatal"]):
+        # Prefer specific domain signals before broad words such as "slow" or
+        # "timeout"; otherwise a payment incident can be misclassified as a
+        # performance issue simply because it happened on a slow network.
+        if any(k in text_lower for k in ["security", "xss", "sqli", "injection", "vulnerability", "leak"]):
+            category = "Security"
+        elif any(k in text_lower for k in ["payment", "charge", "idempotency", "billing"]):
+            category = "Logic Error"
+        elif any(k in text_lower for k in ["auth", "login", "session", "jwt", "permission"]):
+            category = "Authentication"
+        elif any(k in text_lower for k in ["network", "http", "504", "502", "connection", "socket", "api gateway"]):
+            category = "Network"
+        elif any(k in text_lower for k in ["crash", "hang", "freeze", "terminate", "oom", "out of memory", "fatal"]):
             category = "Crash"
         elif any(k in text_lower for k in ["slow", "lag", "timeout", "30s", "latency", "performance", "high cpu"]):
             category = "Performance"
-        elif any(k in text_lower for k in ["auth", "login", "token", "session", "jwt", "permission"]):
-            category = "Authentication"
-        elif any(k in text_lower for k in ["security", "xss", "sqli", "injection", "vulnerability", "leak"]):
-            category = "Security"
         elif any(k in text_lower for k in ["ui", "button", "css", "align", "display", "render", "screen"]):
             category = "UI/UX"
         elif any(k in text_lower for k in ["network", "http", "504", "502", "connection", "socket"]):
@@ -128,7 +135,20 @@ class BugPredictor:
         default_mod = self.modules_list[0] if self.modules_list else "General Component"
         default_team = self.teams_list[0] if self.teams_list else "Backend Services"
 
-        if any(k in text_lower for k in ["upload", "image", "file", "avatar", "20mb", "picture"]):
+        if any(k in text_lower for k in ["payment", "charge", "idempotency"]):
+            module = "Payment Gateway"
+            team = "Backend Services"
+            causes = [
+                "Missing client-side idempotency header token.",
+                "Network timeout triggering automatic non-idempotent retry."
+            ]
+            tests = [
+                "Submit payment request with slow network throttle (3G).",
+                "Double-click payment submit button rapidly.",
+                "Verify idempotency key enforcement on API gateway.",
+                "Verify transaction rollback on gateway timeout."
+            ]
+        elif any(k in text_lower for k in ["upload", "image", "file", "avatar", "20mb", "picture"]):
             module = "Image Upload Service"
             team = "Backend Services"
             causes = [
@@ -155,18 +175,31 @@ class BugPredictor:
                 "Simulate high concurrent login requests.",
                 "Verify session token expiration behavior."
             ]
-        elif any(k in text_lower for k in ["payment", "charge", "idempotency"]):
-            module = "Payment Gateway"
-            team = "Backend Services"
+        elif any(k in text_lower for k in ["database", "db_", "connection lock", "query execution"]):
+            module = "Database Connector"
+            team = "Database Admins"
             causes = [
-                "Missing client-side idempotency header token.",
-                "Network timeout triggering automatic non-idempotent retry."
+                "Connection pool is not releasing locks under concurrent requests.",
+                "Database query exceeds the configured gateway timeout."
             ]
             tests = [
-                "Submit payment request with slow network throttle (3G).",
-                "Double-click payment submit button rapidly.",
-                "Verify idempotency key enforcement on API gateway.",
-                "Verify transaction rollback on gateway timeout."
+                "Run concurrent queries and confirm connections are returned to the pool.",
+                "Verify query timeout and cancellation behavior.",
+                "Load test the affected API endpoint under database contention.",
+                "Confirm lock waits and slow queries are recorded in monitoring."
+            ]
+        elif any(k in text_lower for k in ["api gateway", "http", "504", "502", "endpoint"]):
+            module = "API Gateway"
+            team = "Backend Services"
+            causes = [
+                "Upstream service exceeded the configured gateway timeout.",
+                "Gateway retry or connection handling failed for the request."
+            ]
+            tests = [
+                "Verify gateway behavior for upstream timeout responses.",
+                "Load test the endpoint under concurrent requests.",
+                "Confirm retry and circuit-breaker policies are applied.",
+                "Verify structured timeout logging includes the upstream service."
             ]
         else:
             module = default_mod
