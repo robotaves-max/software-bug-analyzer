@@ -100,8 +100,8 @@ class BugAnalysisPipeline:
         llm_cfg = self.config.get("llm", {})
         self.prompt_manager = PromptManager(self.prompts_path)
         self.llm_client = LLMClient(
-            provider=llm_cfg.get("provider", "groq"),
-            model=llm_cfg.get("model", "llama-3.1-70b-versatile"),
+            provider=llm_cfg.get("provider", "gemini"),
+            model=llm_cfg.get("model", "gemini-3.5-flash-lite"),
             config=llm_cfg
         )
 

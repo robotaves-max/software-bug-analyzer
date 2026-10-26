@@ -20,7 +20,7 @@ except ImportError:
     OpenAI = None
 
 try:
-    import google.generativeai as genai
+    from google import genai
     GEMINI_AVAILABLE = True
 except ImportError:
     GEMINI_AVAILABLE = False
@@ -47,7 +47,7 @@ class LLMClient:
         elif self.provider == "openai":
             self.model = model or self.config.get("model", "gpt-4o-mini")
         elif self.provider == "gemini":
-            self.model = model or self.config.get("model", "gemini-1.5-flash")
+            self.model = model or self.config.get("model", "gemini-3.5-flash-lite")
         elif self.provider == "ollama":
             self.model = model or self.config.get("model", "llama3")
         else:
@@ -77,8 +77,7 @@ class LLMClient:
         elif self.provider == "gemini":
             api_key = os.getenv("GOOGLE_API_KEY")
             if GEMINI_AVAILABLE and api_key:
-                genai.configure(api_key=api_key)
-                self.client = genai.GenerativeModel(self.model)
+                self.client = genai.Client(api_key=api_key)
                 logger.info(f"Initialized Gemini client with model {self.model}.")
             else:
                 logger.warning("Google Gemini API key or SDK missing.")
@@ -124,12 +123,16 @@ class LLMClient:
             return response.choices[0].message.content
 
         elif self.provider == "gemini":
-            full_prompt = f"{system_prompt}\n\n{user_prompt}"
-            generation_config = genai.types.GenerationConfig(
-                temperature=self.temperature,
-                max_output_tokens=self.max_tokens
+            response = self.client.models.generate_content(
+                model=self.model,
+                contents=f"{system_prompt}\n\n{user_prompt}",
+                config={
+                    "temperature": self.temperature,
+                    "max_output_tokens": self.max_tokens,
+                },
             )
-            response = self.client.generate_content(full_prompt, generation_config=generation_config)
+            if not response.text:
+                raise RuntimeError("Gemini returned an empty response.")
             return response.text
 
         elif self.provider == "ollama":

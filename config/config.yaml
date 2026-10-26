@@ -57,9 +57,10 @@ faiss:
   metadata_path: "faiss_index/bug_metadata.json"
   top_k: 5
 
+
 llm:
-  provider: "groq"
-  model: "llama-3.1-70b-versatile"
+  provider: "gemini"
+  model: "gemini-3.5-flash-lite"
   temperature: 0.2
   max_tokens: 1500
   system_prompt_key: "bug_analysis"
