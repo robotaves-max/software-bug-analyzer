@@ -52,7 +52,7 @@ else:
             for c in rec["causes"]:
                 st.markdown(f"- {c}")
 
-            st.markdown("#### 🧠 Technical Explanation")
+            st.markdown("#### Technical Explanation")
             st.info(rec["explanation"])
 
         with col_right:
@@ -60,6 +60,6 @@ else:
             for idx, test_step in enumerate(rec["tests"], 1):
                 st.checkbox(f"{idx}. {test_step}", key=f"output_test_{rec['id']}_{idx}")
 
-        with st.expander("🔬 NLP Feature Extraction Analysis"):
+        with st.expander(" Feature Extraction Analysis"):
             st.write("**Extracted Tokens:**", rec["tokens"])
             st.write("**Extracted Keyphrases:**", rec["keyphrases"])

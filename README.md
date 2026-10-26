@@ -5,7 +5,7 @@
 [![FAISS](https://img.shields.io/badge/FAISS-1.8.0-008080?style=for-the-badge)](https://faiss.ai)
 [![spaCy](https://img.shields.io/badge/spaCy-3.7+-09A3D5?style=for-the-badge&logo=spacy&logoColor=white)](https://spacy.io)
 
-An end-to-end AI-powered **Software Bug Analyzer** system that combines 6-stage Natural Language Processing (NLP), FAISS Vector RAG retrieval over historical GitHub issues, and abstract LLM reasoning (Groq / OpenAI / Gemini / Ollama) to automatically categorize, triage, assign teams, and recommend QA test suites for incoming software bug reports.
+An end-to-end AI-powered **Software Bug Analyzer** system that combines 6-stage Natural Language Processing (NLP), FAISS Vector RAG retrieval over historical GitHub issues, and abstract LLM reasoning to automatically categorize, triage, assign teams, and recommend QA test suites for incoming software bug reports.
 
 ---
 
@@ -30,14 +30,14 @@ An end-to-end AI-powered **Software Bug Analyzer** system that combines 6-stage 
    [ 1. Raw Sanitization ]           [ Top 5 Vector Search ]       │
              │                               │                     │
              ▼                               │                     │
-   [ 2. spaCy Tokenization ]                 │                     │
+   [ 2. Text Processing ]                 │                     │
              │                               │                     │
              ▼                               │                     │
-   [ 3. Software Entities ]                  │                     │
+   [ 3. Feature Extraction ]                  │                     │
    (Action, Component, Error, Condition)     │                     │
              │                               │                     │
              ▼                               │                     │
-   [ 4. Keyphrase Extraction ] ──────────────┘                     │
+   [ 4. Key Information Extraction ] ──────────────┘                     │
    (Hybrid: KeyBERT + YAKE + spaCy)                                │
              │                                                     │
              └───────────────────────┬─────────────────────────────┘
@@ -97,10 +97,11 @@ software-bug-analyzer/
 │   ├── 3_Dashboard.py              # Analytics metrics, charts, & CSV export
 │   └── 4_History.py                # Searchable, filterable bug history table
 ├── app.py                          # Streamlit application main entry point
-├── main.py                         # Standalone Person 1 CLI demo
-├── person2_integration_example.py  # Person 2 integration reference code
+├── main.py                         # Standalone CLI demo
 ├── scripts/                        # Dataset collection, cleaning, and FAISS build scripts
-├── tests/test_pipeline.py          # PyTest / Unittest test suite
+├── tests/
+│   ├── test_analytics.py
+│   └── test_pipeline.py
 └── requirements.txt
 ```
 
@@ -135,27 +136,25 @@ GOOGLE_API_KEY=AIzaSy...
 
 ---
 
-## 🧪 Verification & Running Demos
+##  Verification & Running Demos
 
 ### Run Automated Unit Tests (100% Offline Compatible)
 ```bash
 python tests/test_pipeline.py
 ```
 
-### Run Standalone Person 1 CLI Demo
+### Run CLI Demo
 ```bash
 python main.py
 ```
 
-### Run Person 2 Streamlit Web Application
+### Run Streamlit Web Application
 ```bash
 streamlit run app.py
 ```
 
 ---
 
-## 🤝 Person 1 vs. Person 2 Split & Integration Contract
+## System Integration
 
-- **Person 1 (AI Pipeline)**: Owns `src/` modules (`pipeline.py`). Exposes `BugAnalysisPipeline.analyze(title, description)`.
-- **Person 2 (Application Engineer)**: Owns `backend/` and `pages/` Streamlit UI. Consumes Person 1 via `from src.pipeline import BugAnalysisPipeline`.
-- **Privacy Contract**: Retracted historical RAG bugs are fed strictly into the internal LLM context prompt (`_internal`) and are **NEVER shown to the user** on the Streamlit frontend.
+The system integrates the analysis pipeline with the Streamlit application. The pipeline processes the submitted bug report, retrieves relevant historical context, performs AI-based analysis, and returns structured results to the application.

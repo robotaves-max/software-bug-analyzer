@@ -35,7 +35,12 @@ TEST_BUGS = [
 ]
 
 def main():
-    console.print(Panel.fit("[bold green]Software Bug Analyzer - Person 1 AI Pipeline Demo[/bold green]", subtitle="NLP + RAG + LLM"))
+    console.print(
+        Panel.fit(
+            "[bold green]Software Bug Analyzer - AI Pipeline Demo[/bold green]", 
+            subtitle="RAG + LLM"
+        )
+    )
 
     pipeline = BugAnalysisPipeline()
 
@@ -51,11 +56,13 @@ def main():
         console.rule(f"[bold cyan]Test Scenario #{idx}: {test_case['title']}[/bold cyan]")
         console.print(f"[bold gray]Description:[/bold gray] {test_case['description']}\n")
 
-        with console.status("[bold green]Analyzing Bug (NLP -> Embeddings -> FAISS -> LLM)...[/bold green]"):
+        with console.status(
+            "[bold green]Analyzing Bug (Preprocessing -> Embeddings -> FAISS -> LLM)...[/bold green]"
+        ):
             result = pipeline.analyze(test_case["title"], test_case["description"])
 
         nlp_info = result["nlp"]
-        console.print("[bold yellow]1. Extracted NLP Features:[/bold yellow]")
+        console.print("[bold yellow]1. Extracted Features:[/bold yellow]")
         console.print(f"  * Tokens: {nlp_info['tokens']}")
         console.print(f"  * Entities: {nlp_info['entities']}")
         console.print(f"  * Keyphrases: {nlp_info['keyphrases']}")
@@ -66,7 +73,8 @@ def main():
         console.print(JSON(json.dumps(pred_info)))
         console.print("\n" + "="*80 + "\n")
 
-    console.print("[bold green]SUCCESS: All 4 Person 1 Test Scenarios Completed Successfully![/bold green]")
+    console.print(
+        "[bold green]SUCCESS: All 4 Test Scenarios Completed Successfully![/bold green]")
 
 if __name__ == "__main__":
     main()

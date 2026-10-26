@@ -69,7 +69,6 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # Sidebar header
-st.sidebar.image("https://img.icons8.com/isometric-folders/100/bug.png", width=70)
 st.sidebar.title("Bug Analyzer AI")
 st.sidebar.caption("NLP + RAG + LLM System v1.0")
 
@@ -100,7 +99,7 @@ if dark_mode:
     )
 
 st.sidebar.markdown("---")
-st.sidebar.info("💡 Person 1 AI Pipeline runs in the background powered by spaCy, SentenceTransformers, FAISS, and Groq/OpenAI LLM models.")
+st.sidebar.info("💡 AI Pipeline runs in the background powered by spaCy, SentenceTransformers, FAISS, and Groq/OpenAI LLM models.")
 
 # Main Landing Content
 st.markdown('<div class="main-title">Software Bug Analyzer</div>', unsafe_allow_html=True)
@@ -135,4 +134,4 @@ with col3:
 st.markdown("---")
 
 st.markdown("### Quick Start")
-st.write("Select **1_Input** from the left sidebar to submit a new bug report for AI analysis, or explore **3_Dashboard** to view aggregated team metrics.")
+st.write("Select **Input** from the left sidebar to submit a new bug report for AI analysis, or explore **Dashboard** to view aggregated team metrics.")

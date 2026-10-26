@@ -96,7 +96,7 @@ class BugPredictor:
 
     def fallback_heuristic(self, title: str, description: str, nlp_data: Dict[str, Any]) -> Dict[str, Any]:
         """Rule-based heuristic prediction engine for standalone execution without LLM keys."""
-        logger.info("Executing Rule-Based NLP Heuristic Engine for bug analysis...")
+        logger.info("Executing Rule-Based Heuristic Engine for bug analysis...")
         text_lower = f"{title} {description}".lower()
 
         # Prefer specific domain signals before broad words such as "slow" or
@@ -216,7 +216,7 @@ class BugPredictor:
             ]
 
         explanation = (
-            f"Rule-Based NLP Analysis: Identified critical patterns for '{category}' category "
+            f"Rule-Based Analysis: Identified critical patterns for '{category}' category "
             f"within '{module}'. The issue exhibits characteristics of {severity.lower()} impact requiring immediate review."
         )
 
@@ -273,7 +273,7 @@ class BugPredictor:
 
         prediction["_meta"] = {
             "provider": self.llm.provider if self.llm.is_available() else "heuristic_fallback",
-            "model": self.llm.model if self.llm.is_available() else "rule-based-nlp-v1",
+            "model": self.llm.model if self.llm.is_available() else "rule-based-v1",
             "nlp_tokens_count": len(tokens),
             "keyphrases_used": len(keyphrases)
         }

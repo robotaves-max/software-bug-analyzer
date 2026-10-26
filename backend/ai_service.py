@@ -11,7 +11,7 @@ from src.pipeline import BugAnalysisPipeline
 from backend.db import save_bug_analysis
 
 class AIService:
-    """Service bridge connecting Person 1 AI pipeline to Person 2 Streamlit application."""
+    """Service bridge connecting AI pipeline to application."""
 
     def __init__(self):
         logger.info("Initializing AIService singleton...")
@@ -25,7 +25,7 @@ class AIService:
 
         self.pipeline.initialize()
 
-    def analyze_bug(self, title: str, description: str, user: str = "Senior Developer") -> Dict[str, Any]:
+    def analyze_bug(self, title: str, description: str, user: str ) -> Dict[str, Any]:
         """Executes full bug analysis and persists result into SQLite database."""
         result = self.pipeline.analyze(title, description)
         result["user"] = user

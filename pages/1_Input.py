@@ -15,8 +15,8 @@ def get_ai_service():
     """Instantiates cached singleton AI Service."""
     return AIService()
 
-st.title("📝 Submit Bug Report for AI Analysis")
-st.caption("Enter bug details below. The NLP pipeline will extract entities, retrieve internal RAG context, and generate diagnosis.")
+st.title(" Submit Bug Report for AI Analysis")
+st.caption("Enter bug details below. The pipeline will extract entities, retrieve internal RAG context, and generate diagnosis.")
 
 with st.form("bug_submission_form"):
     col_title, col_user = st.columns([3, 1])
@@ -38,7 +38,7 @@ with st.form("bug_submission_form"):
         help="Include full error descriptions, code paths, or logs."
     )
 
-    submit_button = st.form_submit_button("🚀 Analyze Bug with AI", type="primary", use_container_width=True)
+    submit_button = st.form_submit_button(" Analyze Bug with AI", type="primary", use_container_width=True)
 
 if submit_button:
     if not title_input.strip() or not desc_input.strip():
@@ -54,7 +54,7 @@ if submit_button:
 
         # Render Diagnosis Visualizer
         st.markdown("---")
-        st.subheader("🎯 AI Diagnosis & Recommendation")
+        st.subheader(" AI Diagnosis & Recommendation")
 
         pred = result["prediction"]
         nlp = result["nlp"]
@@ -80,12 +80,12 @@ if submit_button:
         col_left, col_right = st.columns(2)
 
         with col_left:
-            st.markdown("#### 🔍 Possible Root Causes")
+            st.markdown("#### Possible Root Causes")
             causes = pred.get("possible_causes", [])
             for c in causes:
                 st.markdown(f"- {c}")
 
-            st.markdown("#### 🧠 Technical Explanation")
+            st.markdown("#### Technical Explanation")
             st.info(pred.get("explanation", ""))
 
         with col_right:
@@ -94,7 +94,7 @@ if submit_button:
             for idx, test_step in enumerate(tests, 1):
                 st.checkbox(f"{idx}. {test_step}", key=f"test_input_{idx}")
 
-        with st.expander("🔬 View Extracted NLP Metadata"):
+        with st.expander(" View Extracted Metadata"):
             st.write("**Cleaned Text:**", nlp.get("clean_text", ""))
             st.write("**Extracted Tokens:**", nlp.get("tokens", []))
             st.write("**Extracted Entities:**", nlp.get("entities", {}))

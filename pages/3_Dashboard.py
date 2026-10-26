@@ -14,7 +14,6 @@ from backend.analytics import (
     build_daily_timeline_chart,
     build_module_bar_chart,
     build_team_donut_chart,
-    generate_pdf_report
 )
 
 st.set_page_config(page_title="Analytics Dashboard - Bug Analyzer", page_icon="📈", layout="wide")
@@ -79,15 +78,3 @@ else:
         mime="text/csv",
         type="primary"
     )
-
-    try:
-        pdf_bytes = generate_pdf_report(df)
-        st.download_button(
-            label="Download Bug Analytics Report (PDF)",
-            data=pdf_bytes,
-            file_name="bug_analytics_report.pdf",
-            mime="application/pdf",
-            type="secondary"
-        )
-    except Exception as exc:
-        st.info("PDF export is available when reportlab is installed. Install reportlab to enable PDF downloads.")
