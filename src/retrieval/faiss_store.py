@@ -128,7 +128,7 @@ class FaissBugStore:
         idx_file.parent.mkdir(parents=True, exist_ok=True)
         meta_file.parent.mkdir(parents=True, exist_ok=True)
 
-        if FAISS_AVAILABLE and hasattr(self.index, "write"):
+        if FAISS_AVAILABLE and not isinstance(self.index, FallbackNumpyIndex):
             faiss.write_index(self.index, str(idx_file))
             logger.info(f"Persisted FAISS index to {idx_file}")
         else:
